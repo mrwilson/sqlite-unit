@@ -20,10 +20,13 @@ static void assert_equal(
   if (sqlite3_value_type(argv[0]) == SQLITE_NULL) return;
 
   if (type1 == SQLITE_INTEGER) {
-    if (sqlite3_value_int64(argv[0]) == sqlite3_value_int64(argv[1])) {
+    int value1 = sqlite3_value_int64(argv[0]);
+    int value2 = sqlite3_value_int64(argv[1]);
+
+    if (value1 == value2) {
         printf("PASS\n");
     } else {
-        sqlite3_result_error(context, sqlite3_mprintf("FAIL: %d != %d",sqlite3_value_int64(argv[0]),sqlite3_value_int64(argv[1]))  , -1);
+        sqlite3_result_error(context, sqlite3_mprintf("FAIL: %d != %d", value1, value2), -1);
     }
   } else {
      sqlite3_result_error(context, "Not implemented yet", -1);
