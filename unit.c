@@ -42,6 +42,15 @@ static void assert_equal(
     } else {
         assertionError(context, sqlite3_mprintf("FAIL: %s != %s", value1, value2));
     }
+  } else if (type1 == SQLITE_FLOAT) {
+    double value1 = sqlite3_value_double(argv[0]);
+    double value2 = sqlite3_value_double(argv[1]);
+
+    if (value1 == value2) {
+        printf("PASS\n");
+    } else {
+        assertionError(context, sqlite3_mprintf("FAIL: %f != %f", value1, value2));
+    }
   } else {
      sqlite3_result_error(context, "Not implemented yet", -1);
   }
