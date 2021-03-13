@@ -32,4 +32,7 @@ run_test test_text_fail.sql "Error: near line 3: FAIL: foo != bar"
 run_test test_float_pass.sql "PASS"
 run_test test_float_fail.sql "Error: near line 3: FAIL: 1.000000 != 2.000000"
 
+run_test test_null_pass.sql "PASS"
+run_test test_null_fail.sql "Error: near line 3: FAIL: Expected value was not null"
+
 run_test test_fail_mismatched_types.sql "Error: near line 3: Mismatched types"

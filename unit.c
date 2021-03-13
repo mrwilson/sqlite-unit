@@ -9,6 +9,18 @@ static void assertionError(sqlite3_context* context, char* message) {
     sqlite3_result_error(context, message, -1);
 }
 
+static void assert_null(
+  sqlite3_context *context,
+  int argc,
+  sqlite3_value **argv
+){
+  if (sqlite3_value_type(argv[0]) == SQLITE_NULL) {
+      printf("PASS\n");
+  } else {
+      assertionError(context, sqlite3_mprintf("FAIL: Expected value was not null"));
+  }
+}
+
 static void assert_equal(
   sqlite3_context *context,
   int argc,
@@ -63,6 +75,9 @@ int sqlite3_unit_init(
 ){
   SQLITE_EXTENSION_INIT2(pApi);
   (void) pzErrMsg;
-  return sqlite3_create_function(
-    db, "assertEqual", 2, SQLITE_UTF8, 0, assert_equal, 0, 0);
+
+  sqlite3_create_function(db, "assertEqual", 2, SQLITE_UTF8, 0, assert_equal, 0, 0);
+  sqlite3_create_function(db, "assertNull",  1, SQLITE_UTF8, 0, assert_null,  0, 0);
+
+  return SQLITE_OK;
 }
