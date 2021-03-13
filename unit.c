@@ -9,10 +9,17 @@ static void assert_equal(
   int argc,
   sqlite3_value **argv
 ){
+  int type1 = sqlite3_value_type(argv[0]);
+  int type2 = sqlite3_value_type(argv[1]);
+
+  if (type1 != type2) {
+    sqlite3_result_error(context, "Mismatched types", -1);
+    return;
+  }
 
   if (sqlite3_value_type(argv[0]) == SQLITE_NULL) return;
 
-  if (sqlite3_value_type(argv[0]) == SQLITE_INTEGER) {
+  if (type1 == SQLITE_INTEGER) {
     if (sqlite3_value_int64(argv[0]) == sqlite3_value_int64(argv[1])) {
         printf("PASS\n");
     } else {
