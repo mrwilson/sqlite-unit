@@ -4,6 +4,12 @@ SQLITE_EXTENSION_INIT1
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
+#include <stdbool.h>
+
+typedef struct {
+  bool passed;
+  char* message;
+} TestRun;
 
 static void assertion_error(sqlite3_context* context, char* message) {
     sqlite3_result_error(context, message, -1);
@@ -21,17 +27,23 @@ static void assert_not_null(
   }
 }
 
-static char* compare_values(int type, sqlite3_value **argv) {
+static TestRun compare_values(int type, sqlite3_value **argv) {
+
+  TestRun t;
+  t.passed = false;
 
   if (type == SQLITE_INTEGER) {
     int value1 = sqlite3_value_int64(argv[0]);
     int value2 = sqlite3_value_int64(argv[1]);
 
     if (value1 == value2) {
-        return NULL;
+        t.passed = true;
+        t.message = NULL;
     } else {
-        return sqlite3_mprintf("FAIL: %d != %d", value1, value2);
+        t.message = sqlite3_mprintf("FAIL: %d != %d", value1, value2);
     }
+
+    return t;
   }
 
   if (type == SQLITE_TEXT) {
@@ -39,10 +51,13 @@ static char* compare_values(int type, sqlite3_value **argv) {
     char* value2 = (char*) sqlite3_value_text(argv[1]);
 
     if (strcmp(value1, value2) == 0) {
-        return NULL;
+        t.passed = true;
+        t.message = NULL;
     } else {
-        return sqlite3_mprintf("FAIL: %s != %s", value1, value2);
+        t.message = sqlite3_mprintf("FAIL: %s != %s", value1, value2);
     }
+
+    return t;
   }
 
   if (type == SQLITE_FLOAT) {
@@ -50,14 +65,17 @@ static char* compare_values(int type, sqlite3_value **argv) {
     double value2 = sqlite3_value_double(argv[1]);
 
     if (value1 == value2) {
-        return NULL;
+        t.passed = true;
+        t.message = NULL;
     } else {
-        return sqlite3_mprintf("FAIL: %f != %f", value1, value2);
+        t.message = sqlite3_mprintf("FAIL: %f != %f", value1, value2);
     }
+
+    return t;
   }
 
-  return "Not implemented yet";
-
+  t.message = "Not implemented yet";
+  return t;
 }
 
 static void assert_null(
@@ -87,12 +105,12 @@ static void assert_equal(
     return;
   }
 
-  char* message = compare_values(type1, argv);
+  TestRun run = compare_values(type1, argv);
 
-  if (message == NULL) {
+  if (run.passed) {
     printf("PASS\n");
   } else {
-    assertion_error(context, message);
+    assertion_error(context, run.message);
   }
 
 }
