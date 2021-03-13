@@ -15,16 +15,30 @@ static void assertion_error(sqlite3_context* context, char* message) {
     sqlite3_result_error(context, message, -1);
 }
 
+static void tap_output(TestRun run) {
+  if (run.passed) {
+    printf("ok\n");
+  } else {
+    printf("not ok\n");
+    printf("# %s\n", run.message);
+  }
+}
+
 static void assert_not_null(
   sqlite3_context *context,
   int argc,
   sqlite3_value **argv
 ){
+  TestRun t;
+  t.passed = false;
+
   if (sqlite3_value_type(argv[0]) != SQLITE_NULL) {
-      printf("PASS\n");
+      t.passed = true;
   } else {
-      assertion_error(context, sqlite3_mprintf("FAIL: Expected value was null"));
+      t.message = "FAIL: Expected value was null";
   }
+
+  tap_output(t);
 }
 
 static TestRun compare_values(int type, sqlite3_value **argv) {
@@ -83,11 +97,16 @@ static void assert_null(
   int argc,
   sqlite3_value **argv
 ){
+  TestRun t;
+  t.passed = false;
+
   if (sqlite3_value_type(argv[0]) == SQLITE_NULL) {
-      printf("PASS\n");
+      t.passed = true;
   } else {
-      assertion_error(context, sqlite3_mprintf("FAIL: Expected value was not null"));
+      t.message = "FAIL: Expected value was not null";
   }
+
+  tap_output(t);
 }
 
 static void assert_equal(
@@ -101,18 +120,13 @@ static void assert_equal(
   int type2 = sqlite3_value_type(argv[1]);
 
   if (type1 != type2) {
-    sqlite3_result_error(context, "Mismatched types", -1);
-    return;
-  }
-
-  TestRun run = compare_values(type1, argv);
-
-  if (run.passed) {
-    printf("PASS\n");
+    TestRun t;
+    t.passed = false;
+    t.message = "Mismatched types";
+    tap_output(t);
   } else {
-    assertion_error(context, run.message);
+    tap_output(compare_values(type1, argv));
   }
-
 }
 
 int sqlite3_unit_init(

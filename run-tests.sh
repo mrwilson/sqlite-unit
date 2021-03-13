@@ -2,7 +2,7 @@
 
 function run_test() {
     TEST_FILE=$1
-    EXPECTED_OUTPUT=$2
+    EXPECTED_OUTPUT=$(echo -e $2)
 
     ACTUAL_OUTPUT=$(sqlite3 < "test/$TEST_FILE" 2>&1 | tr -d '\r')
 
@@ -23,19 +23,19 @@ for lib in *.c; do
     -o $(echo $lib | sed 's/\.c/.dylib/')
 done
 
-run_test test_int_pass.sql "PASS"
-run_test test_int_fail.sql "Error: near line 3: FAIL: 0 != 1"
+run_test test_int_pass.sql "ok"
+run_test test_int_fail.sql "not ok\n# FAIL: 0 != 1"
 
-run_test test_text_pass.sql "PASS"
-run_test test_text_fail.sql "Error: near line 3: FAIL: foo != bar"
+run_test test_text_pass.sql "ok"
+run_test test_text_fail.sql "not ok\n# FAIL: foo != bar"
 
-run_test test_float_pass.sql "PASS"
-run_test test_float_fail.sql "Error: near line 3: FAIL: 1.000000 != 2.000000"
+run_test test_float_pass.sql "ok"
+run_test test_float_fail.sql "not ok\n# FAIL: 1.000000 != 2.000000"
 
-run_test test_null_pass.sql "PASS"
-run_test test_null_fail.sql "Error: near line 3: FAIL: Expected value was not null"
+run_test test_null_pass.sql "ok"
+run_test test_null_fail.sql "not ok\n# FAIL: Expected value was not null"
 
-run_test test_not_null_pass.sql "PASS"
-run_test test_not_null_fail.sql "Error: near line 3: FAIL: Expected value was null"
+run_test test_not_null_pass.sql "ok"
+run_test test_not_null_fail.sql "not ok\n# FAIL: Expected value was null"
 
-run_test test_fail_mismatched_types.sql "Error: near line 3: Mismatched types"
+run_test test_fail_mismatched_types.sql "not ok\n# Mismatched types"
