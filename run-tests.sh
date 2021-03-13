@@ -4,7 +4,7 @@ function run_test() {
     TEST_FILE=$1
     EXPECTED_OUTPUT=$2
 
-    ACTUAL_OUTPUT=$(sqlite3 < "$TEST_FILE" 2>&1 | tr -d '\r')
+    ACTUAL_OUTPUT=$(sqlite3 < "test/$TEST_FILE" 2>&1 | tr -d '\r')
 
     if [[ "$ACTUAL_OUTPUT" = "$EXPECTED_OUTPUT" ]]; then
       echo "Test passed: ${TEST_FILE}"
