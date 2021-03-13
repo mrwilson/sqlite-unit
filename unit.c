@@ -11,9 +11,7 @@ typedef struct {
   char* message;
 } TestRun;
 
-static void assertion_error(sqlite3_context* context, char* message) {
-    sqlite3_result_error(context, message, -1);
-}
+int number_of_runs = 0;
 
 static void tap_output(TestRun run) {
   if (run.passed) {
@@ -39,6 +37,8 @@ static void assert_not_null(
   }
 
   tap_output(t);
+
+  number_of_runs++;
 }
 
 static TestRun compare_values(int type, sqlite3_value **argv) {
@@ -107,6 +107,8 @@ static void assert_null(
   }
 
   tap_output(t);
+
+  number_of_runs++;
 }
 
 static void assert_equal(
@@ -127,6 +129,18 @@ static void assert_equal(
   } else {
     tap_output(compare_values(type1, argv));
   }
+
+  number_of_runs++;
+}
+
+void print_summary(sqlite3_context *context){
+    sqlite3 *db = sqlite3_context_db_handle(context);
+    sqlite3_stmt *stmt = sqlite3_next_stmt(db, NULL);
+
+    if (sqlite3_stmt_status(stmt, SQLITE_STMTSTATUS_RUN, 1) == 1) {
+        printf("1..%d\n", number_of_runs);
+        number_of_runs = 0;
+    }
 }
 
 int sqlite3_unit_init(
@@ -137,8 +151,8 @@ int sqlite3_unit_init(
   SQLITE_EXTENSION_INIT2(pApi);
   (void) pzErrMsg;
 
-  sqlite3_create_function(db, "assert_equal", 2, SQLITE_UTF8, 0, assert_equal, 0, 0);
-  sqlite3_create_function(db, "assert_null",  1, SQLITE_UTF8, 0, assert_null,  0, 0);
-  sqlite3_create_function(db, "assert_not_null",  1, SQLITE_UTF8, 0, assert_not_null,  0, 0);
+  sqlite3_create_function(db, "assert_equal", 2, SQLITE_UTF8, 0, 0, assert_equal, print_summary);
+  sqlite3_create_function(db, "assert_null",  1, SQLITE_UTF8, 0, 0, assert_null, print_summary);
+  sqlite3_create_function(db, "assert_not_null",  1, SQLITE_UTF8, 0, 0, assert_not_null, print_summary);
   return SQLITE_OK;
 }

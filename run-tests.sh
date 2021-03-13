@@ -23,19 +23,21 @@ for lib in *.c; do
     -o $(echo $lib | sed 's/\.c/.dylib/')
 done
 
-run_test test_int_pass.sql "ok"
-run_test test_int_fail.sql "not ok\n# FAIL: 0 != 1"
+run_test test_int_pass.sql "ok\n1..1"
+run_test test_int_fail.sql "not ok\n# FAIL: 0 != 1\n1..1"
 
-run_test test_text_pass.sql "ok"
-run_test test_text_fail.sql "not ok\n# FAIL: foo != bar"
+run_test test_text_pass.sql "ok\n1..1"
+run_test test_text_fail.sql "not ok\n# FAIL: foo != bar\n1..1"
 
-run_test test_float_pass.sql "ok"
-run_test test_float_fail.sql "not ok\n# FAIL: 1.000000 != 2.000000"
+run_test test_float_pass.sql "ok\n1..1"
+run_test test_float_fail.sql "not ok\n# FAIL: 1.000000 != 2.000000\n1..1"
 
-run_test test_null_pass.sql "ok"
-run_test test_null_fail.sql "not ok\n# FAIL: Expected value was not null"
+run_test test_null_pass.sql "ok\n1..1"
+run_test test_null_fail.sql "not ok\n# FAIL: Expected value was not null\n1..1"
 
-run_test test_not_null_pass.sql "ok"
-run_test test_not_null_fail.sql "not ok\n# FAIL: Expected value was null"
+run_test test_not_null_pass.sql "ok\n1..1"
+run_test test_not_null_fail.sql "not ok\n# FAIL: Expected value was null\n1..1"
 
-run_test test_fail_mismatched_types.sql "not ok\n# Mismatched types"
+run_test test_multi_pass.sql "ok\nok\nok\n1..3"
+
+run_test test_fail_mismatched_types.sql "not ok\n# Mismatched types\n1..1"
