@@ -23,8 +23,8 @@ for lib in *.c; do
     -o $(echo $lib | sed 's/\.c/.dylib/')
 done
 
-run_test test_pass.sql "PASS"
-run_test test_fail.sql "Error: near line 3: FAIL: 0 != 1"
+run_test test_int_pass.sql "PASS"
+run_test test_int_fail.sql "Error: near line 3: FAIL: 0 != 1"
 
 run_test test_text_pass.sql "PASS"
 run_test test_text_fail.sql "Error: near line 3: FAIL: foo != bar"
