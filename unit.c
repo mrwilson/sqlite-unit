@@ -5,6 +5,10 @@ SQLITE_EXTENSION_INIT1
 #include <stdio.h>
 #include <string.h>
 
+static void assertionError(sqlite3_context* context, char* message) {
+    sqlite3_result_error(context, message, -1);
+}
+
 static void assert_equal(
   sqlite3_context *context,
   int argc,
@@ -27,7 +31,7 @@ static void assert_equal(
     if (value1 == value2) {
         printf("PASS\n");
     } else {
-        sqlite3_result_error(context, sqlite3_mprintf("FAIL: %d != %d", value1, value2), -1);
+        assertionError(context, sqlite3_mprintf("FAIL: %d != %d", value1, value2));
     }
   } else if (type1 == SQLITE_TEXT) {
     char* value1 = (char*) sqlite3_value_text(argv[0]);
@@ -36,7 +40,7 @@ static void assert_equal(
     if (strcmp(value1, value2) == 0) {
         printf("PASS\n");
     } else {
-        sqlite3_result_error(context, sqlite3_mprintf("FAIL: %s != %s", value1, value2), -1);
+        assertionError(context, sqlite3_mprintf("FAIL: %s != %s", value1, value2));
     }
   } else {
      sqlite3_result_error(context, "Not implemented yet", -1);
