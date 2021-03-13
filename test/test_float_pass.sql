@@ -1,3 +1,3 @@
 .load unit.dylib
 
-select assertEqual(cast(1 as float), cast(1 as float));
+select assert_equal(cast(1 as float), cast(1 as float));

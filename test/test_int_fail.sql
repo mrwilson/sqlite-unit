@@ -1,4 +1,4 @@
 .load unit.dylib
 
-select assertEqual(0, 1);
+select assert_equal(0, 1);
 

@@ -1,3 +1,3 @@
 .load unit.dylib
 
-select assertNull(null);
+select assert_null(null);

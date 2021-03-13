@@ -6,7 +6,7 @@ A tiny framework for testing SQLite queries.
 
 The library currently supports:
 
-* `assertEqual`
-* `assertNull`
-* `assertNotNull`
+* `assert_equal`
+* `assert_null`
+* `assert_not_null`
 

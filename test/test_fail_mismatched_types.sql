@@ -1,3 +1,3 @@
 .load unit.dylib
 
-select assertEqual(0, "zero");
+select assert_equal(0, "zero");

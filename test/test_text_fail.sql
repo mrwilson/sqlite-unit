@@ -1,3 +1,3 @@
 .load unit.dylib
 
-select assertEqual("foo", "bar");
+select assert_equal("foo", "bar");

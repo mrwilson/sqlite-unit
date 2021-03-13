@@ -5,7 +5,7 @@ SQLITE_EXTENSION_INIT1
 #include <stdio.h>
 #include <string.h>
 
-static void assertionError(sqlite3_context* context, char* message) {
+static void assertion_error(sqlite3_context* context, char* message) {
     sqlite3_result_error(context, message, -1);
 }
 
@@ -17,7 +17,7 @@ static void assert_not_null(
   if (sqlite3_value_type(argv[0]) != SQLITE_NULL) {
       printf("PASS\n");
   } else {
-      assertionError(context, sqlite3_mprintf("FAIL: Expected value was null"));
+      assertion_error(context, sqlite3_mprintf("FAIL: Expected value was null"));
   }
 }
 
@@ -29,7 +29,7 @@ static void assert_null(
   if (sqlite3_value_type(argv[0]) == SQLITE_NULL) {
       printf("PASS\n");
   } else {
-      assertionError(context, sqlite3_mprintf("FAIL: Expected value was not null"));
+      assertion_error(context, sqlite3_mprintf("FAIL: Expected value was not null"));
   }
 }
 
@@ -55,7 +55,7 @@ static void assert_equal(
     if (value1 == value2) {
         printf("PASS\n");
     } else {
-        assertionError(context, sqlite3_mprintf("FAIL: %d != %d", value1, value2));
+        assertion_error(context, sqlite3_mprintf("FAIL: %d != %d", value1, value2));
     }
   } else if (type1 == SQLITE_TEXT) {
     char* value1 = (char*) sqlite3_value_text(argv[0]);
@@ -64,7 +64,7 @@ static void assert_equal(
     if (strcmp(value1, value2) == 0) {
         printf("PASS\n");
     } else {
-        assertionError(context, sqlite3_mprintf("FAIL: %s != %s", value1, value2));
+        assertion_error(context, sqlite3_mprintf("FAIL: %s != %s", value1, value2));
     }
   } else if (type1 == SQLITE_FLOAT) {
     double value1 = sqlite3_value_double(argv[0]);
@@ -73,7 +73,7 @@ static void assert_equal(
     if (value1 == value2) {
         printf("PASS\n");
     } else {
-        assertionError(context, sqlite3_mprintf("FAIL: %f != %f", value1, value2));
+        assertion_error(context, sqlite3_mprintf("FAIL: %f != %f", value1, value2));
     }
   } else {
      sqlite3_result_error(context, "Not implemented yet", -1);
@@ -88,8 +88,8 @@ int sqlite3_unit_init(
   SQLITE_EXTENSION_INIT2(pApi);
   (void) pzErrMsg;
 
-  sqlite3_create_function(db, "assertEqual", 2, SQLITE_UTF8, 0, assert_equal, 0, 0);
-  sqlite3_create_function(db, "assertNull",  1, SQLITE_UTF8, 0, assert_null,  0, 0);
-  sqlite3_create_function(db, "assertNotNull",  1, SQLITE_UTF8, 0, assert_not_null,  0, 0);
+  sqlite3_create_function(db, "assert_equal", 2, SQLITE_UTF8, 0, assert_equal, 0, 0);
+  sqlite3_create_function(db, "assert_null",  1, SQLITE_UTF8, 0, assert_null,  0, 0);
+  sqlite3_create_function(db, "assert_not_null",  1, SQLITE_UTF8, 0, assert_not_null,  0, 0);
   return SQLITE_OK;
 }
