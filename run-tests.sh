@@ -13,15 +13,11 @@ function run_test() {
     fi
 }
 
-for lib in *.c; do
-  echo "Compiling ${lib}"
-  gcc \
-    -dynamiclib \
-    -lsqlite3 \
-    -DSQLITE_VTAB_INNOCUOUS=0 \
-    ${lib} \
-    -o $(echo $lib | sed 's/\.c/.dylib/')
-done
+gcc \
+  -dynamiclib -lsqlite3 \
+  -DSQLITE_VTAB_INNOCUOUS=0 \
+  unit.c \
+  -o unit.dylib
 
 run_test test_int_pass.sql "ok\n1..1"
 run_test test_int_fail.sql "not ok\n# FAIL: 0 != 1\n1..1"

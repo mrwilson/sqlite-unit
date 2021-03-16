@@ -32,3 +32,17 @@ not ok
 ok
 1..5
 ```
+
+## Build
+
+Compile `unit.c` against the `sqlite3ext.h` header.
+
+```
+gcc \
+  -dynamiclib -lsqlite3 \
+  -DSQLITE_VTAB_INNOCUOUS=0 \
+  unit.c \
+  -o unit.dylib
+```
+
+Load into a running SQLite session with `.load unit.dylib`
